@@ -10,19 +10,31 @@
    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
 
-    <header class="navbar">
-     <div class="logo" onclick="window.location.href='/'"><img src="chairmod_logo.png" alt="ChairMod Logo" style="height:40px; cursor:pointer;" /></div>
-      <nav class="nav-links">
-      <a href=".">Home</a>
-      <a href="#">Create</a>
-       <a href="./explore">Explore</a>
-       <a href="./about">About</a>
-        <input id="nav-login-email" type="email" placeholder="Email" />
-       <input id="nav-login-password" type="password" placeholder="Password" />
-       <button id="nav-login-button">Log In</button>
-       <a href="signup.html" class="signup-link">Sign Up</a>
-      </nav>
-    </header>
+<header class="navbar">
+  <div class="logo" onclick="window.location.href='/'">
+    <img src="chairmod_logo.png" alt="ChairMod Logo" style="height:40px; cursor:pointer;" />
+  </div>
+  <nav class="nav-links">
+    <a href=".">Home</a>
+    <a href="#">Create</a>
+    <a href="./explore">Explore</a>
+    <a href="./about">About</a>
+
+    <!-- Login form container -->
+    <div id="nav-login">
+      <input id="nav-login-email" type="email" placeholder="Email" />
+      <input id="nav-login-password" type="password" placeholder="Password" />
+      <button id="nav-login-button">Log In</button>
+      <a href="signup.html" class="signup-link">Sign Up</a>
+    </div>
+
+    <!-- User actions container, hidden by default -->
+    <div id="nav-user-actions" style="display:none;">
+      <button id="nav-profile-button">Profile</button>
+      <button id="nav-signout-button">Sign Out</button>
+    </div>
+  </nav>
+</header>
 
     <main>
       <h1>Welcome to ChairMod!</h1>
