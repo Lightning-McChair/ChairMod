@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ChairMod User Profile</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo" onclick="window.location.href='/'">
+      <img src="chairmod_logo.png" alt="ChairMod Logo" style="height:40px; cursor:pointer;" />
+    </div>
+    <nav class="nav-links">
+      <a href=".">Home</a>
+      <a href="#">Create</a>
+      <a href="./explore">Explore</a>
+      <a href="./about">About</a>
+    </nav>
+  </header>
+
+  <main>
+    <div id="profile-container">
+      <img id="profile-avatar" src="/default-avatar.png" alt="User Avatar" />
+      <h1 id="username-display"></h1>
+      <p id="role-display"></p>
+      <p id="join-date-display"></p>
+
+      <div id="follow-info">
+        <button id="follow-button">Follow</button>
+        <span id="followers-count">Followers: 0</span> | 
+        <span id="following-count">Following: 0</span>
+      </div>
+
+      <div id="about-me">Loading about me...</div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabaseUrl = 'https://qcaklhpnbclsnflxwyko.supabase.co';
+    const supabaseAnonKey = 'YOUR_PUBLIC_SUPABASE_ANON_KEY';
+    const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+    async function getUserByUsername(username) {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, username, created_at, about_me, role, avatar_url')
+        .eq('username', username)
+        .single();
+      if (error) throw error;
+      return data;
+    }
+
+    async function getFollowerStats(userId) {
+      // Count followers (people who follow this user)
+      const { count: followersCount } = await supabase
+        .from('followers')
+        .select('*', { count: 'exact', head: true })
+        .eq('followed_id', userId);
+
+      // Count following (people this user follows)
+      const { count: followingCount } = await supabase
+        .from('followers')
+        .select('*', { count: 'exact', head: true })
+        .eq('follower_id', userId);
+
+      return { followersCount, followingCount };
+    }
+
+    async function isFollowing(followerId, followedId) {
+      const { data, error } = await supabase
+        .from('followers')
+        .select('*')
+        .eq('follower_id', followerId)
+        .eq('followed_id', followedId)
+        .single();
+      return !!data;
+    }
+
+    async function followUser(followerId, followedId) {
+      const { error } = await supabase
+        .from('followers')
+        .insert([{ follower_id: followerId, followed_id: followedId }]);
+      if (error) throw error;
+    }
+
+    async function unfollowUser(followerId, followedId) {
+      const { error } = await supabase
+        .from('followers')
+        .delete()
+        .eq('follower_id', followerId)
+        .eq('followed_id', followedId);
+      if (error) throw error;
+    }
+
+    async function updateFollowButton(followerId, followedId) {
+      const followButton = document.getElementById('follow-button');
+      const isUserFollowing = await isFollowing(followerId, followedId);
+      followButton.textContent = isUserFollowing ? 'Unfollow' : 'Follow';
+
+      followButton.onclick = async () => {
+        try {
+          if (isUserFollowing) {
+            await unfollowUser(followerId, followedId);
+          } else {
+            await followUser(followerId, followedId);
+          }
+          await refreshFollowInfo(followerId, followedId);
+          updateFollowButton(followerId, followedId); // update button text
+        } catch (e) {
+          alert('Error updating follow status: ' + e.message);
+        }
+      };
+    }
+
+    async function refreshFollowInfo(followerId, followedId) {
+      const { followersCount, followingCount } = await getFollowerStats(followedId);
+      document.getElementById('followers-count').textContent = `Followers: ${followersCount ?? 0}`;
+      document.getElementById('following-count').textContent = `Following: 0`; // You could show this for profile owner later
+
+      // Optional: disable follow button if viewing own profile
+      if (followerId === followedId) {
+        document.getElementById('follow-button').style.display = 'none';
+      } else {
+        document.getElementById('follow-button').style.display = 'inline-block';
+      }
+    }
+
+    async function main() {
+      const path = window.location.pathname;
+      const username = path.split("/").pop();
+
+      try {
+        const user = await getUserByUsername(username);
+        if (!user) {
+          alert('User not found');
+          return;
+        }
+
+        document.getElementById('username-display').textContent = `@${user.username}`;
+        document.getElementById('role-display').textContent = `Role: ${user.role || 'User'}`;
+        document.getElementById('about-me').textContent = user.about_me || "This user hasn't added an about me yet.";
+        document.getElementById('join-date-display').textContent = `Joined: ${new Date(user.created_at).toLocaleDateString()}`;
+        if(user.avatar_url) {
+          document.getElementById('profile-avatar').src = user.avatar_url;
+        }
+
+        // Get current logged in user ID for follow actions
+        const {
+          data: { session }
+        } = await supabase.auth.getSession();
+
+        if (!session) {
+          alert('Log in to follow users.');
+          document.getElementById('follow-button').disabled = true;
+          return;
+        }
+        const currentUserId = session.user.id;
+
+        await refreshFollowInfo(currentUserId, user.id);
+        await updateFollowButton(currentUserId, user.id);
+
+      } catch (error) {
+        alert('Error loading profile: ' + error.message);
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
