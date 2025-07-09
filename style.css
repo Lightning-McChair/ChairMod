@@ -8,11 +8,15 @@
   /*font-family: Verdana;*/
 /*} */
 
+/* Base styling */
 body {
   margin: 0;
   font-family: "Helvetica Neue", Arial, sans-serif;
+  background-color: #fff;
+  color: #000;
 }
 
+/* Navbar styling */
 .navbar {
   display: flex;
   justify-content: center; /* center all items horizontally */
@@ -32,7 +36,6 @@ body {
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
-/* Hover animation for logo */
 .logo:hover {
   color: #ffd6e8; /* lighter pink */
   transform: scale(1.1) rotate(5deg);
@@ -55,6 +58,90 @@ body {
   color: #ffd6e8;
 }
 
+/* Style nav buttons (Profile, Search, Sign Out) like links */
+.nav-links button.nav-button {
+  background: none;
+  border: none;
+  color: white;
+  font-weight: 500;
+  font-family: inherit;
+  font-size: 1em;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.nav-links button.nav-button:hover {
+  text-decoration: underline;
+  color: #ffd6e8;
+}
+
+/* Main page content padding */
 main {
   padding: 20px;
+}
+
+/* --- Profile page styles --- */
+
+#profile-container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #fff8f5;
+  border: 2px solid #ff3200;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255, 50, 0, 0.3);
+}
+
+#profile-container h1 {
+  font-size: 2.5rem;
+  color: #ff3200;
+  margin-bottom: 10px;
+}
+
+#profile-container p {
+  font-size: 1.1rem;
+  color: #333;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* Avatar image styling */
+#profile-avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 3px solid #ff3200;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 15px;
+}
+
+/* About me section */
+#about-me {
+  background-color: #fff0eb;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #ffb3a1;
+  font-style: italic;
+  color: #66332e;
+}
+
+/* Responsive layout for profile page */
+@media (max-width: 600px) {
+  #profile-container {
+    margin: 15px;
+    padding: 15px;
+  }
+  
+  #profile-container h1 {
+    font-size: 2rem;
+  }
+
+  #profile-avatar {
+    width: 120px;
+    height: 120px;
+  }
 }
