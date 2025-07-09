@@ -22,14 +22,16 @@
 
       <!-- Login form -->
       <div id="nav-login">
-        <input id="nav-login-username" type="text" placeholder="Username" />
+        <input id="nav-login-email" type="email" placeholder="Email" />
         <input id="nav-login-password" type="password" placeholder="Password" />
         <button id="nav-login-button" class="nav-button">Log In</button>
         <a href="signup.html" class="signup-link">Sign Up</a>
       </div>
 
-      <!-- User action buttons (hidden by default) -->
+      <!-- User action buttons -->
       <div id="nav-user-actions" style="display:none;">
+        <input id="nav-search" type="text" placeholder="Search users..." />
+        <button id="nav-search-button" class="nav-button">Search</button>
         <button id="nav-profile-button" class="nav-button">Profile</button>
         <button id="nav-signout-button" class="nav-button">Sign Out</button>
       </div>
@@ -43,5 +45,41 @@
   </main>
 
   <script src="index.js"></script>
+</body>
+</html>
+
+<!-- signup.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ChairMod - Sign Up</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+
+  <header class="navbar">
+    <div class="logo" onclick="window.location.href='/'">
+      <img src="chairmod_logo.png" alt="ChairMod Logo" style="height:40px; cursor:pointer;" />
+    </div>
+    <nav class="nav-links">
+      <a href=".">Home</a>
+      <a href="#">Create</a>
+      <a href="./explore">Explore</a>
+      <a href="./about">About</a>
+    </nav>
+  </header>
+
+  <form id="signup-form">
+    <input id="email" type="email" placeholder="Email" required />
+    <input id="username" type="text" placeholder="Username" required />
+    <input id="password" type="password" placeholder="Password" required />
+    <button type="submit">Sign Up</button>
+  </form>
+
+  <script src="signup.js"></script>
 </body>
 </html>
