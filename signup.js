@@ -1,13 +1,11 @@
-// signup.js
 window.addEventListener("DOMContentLoaded", () => {
   const supabase = window.supabaseClient;
-
   const signupForm = document.getElementById("signup-form");
-  const loginForm = document.getElementById("login-form");
 
   if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+
       const email = document.getElementById("email").value.trim();
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value.trim();
@@ -17,39 +15,41 @@ window.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const { data, error } = await supabase.auth.signUp({ email, password });
-      if (error) {
-        alert(error.message);
+      // Sign up the user
+      const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
+      if (signUpError) {
+        alert("Signup failed: " + signUpError.message);
         return;
       }
 
-      alert("✅ Check your email for confirmation!");
       const userId = data?.user?.id;
-
-      if (userId) {
-        await supabase.from("users").insert([{ id: userId, username }]);
-      }
-    });
-  }
-
-  if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("login-email").value.trim();
-      const password = document.getElementById("login-password").value.trim();
-
-      if (!email || !password) {
-        alert("Please fill out both fields.");
+      if (!userId) {
+        alert("Signup failed: user ID not returned.");
         return;
       }
 
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        alert(error.message);
+      // Insert profile row in 'users' table
+      const { error: profileError } = await supabase
+        .from("users")
+        .insert([
+          {
+            id: userId,
+            username: username,
+            about_me: "",   // empty for now
+            role: "",       // empty for now
+            // created_at will default to now()
+            // avatar_url will default to your DB default later
+          },
+        ]);
+
+      if (profileError) {
+        alert("Failed to create user profile: " + profileError.message);
         return;
       }
 
-      alert("✅ Logged in successfully!");
+      alert("✅ Signup successful! Check your email for confirmation.");
+      // Optionally, redirect or reset the form here
+      signupForm.reset();
     });
   }
 });
